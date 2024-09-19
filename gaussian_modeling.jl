@@ -191,26 +191,19 @@ function parse_parameters(row)
 end
 
 function parameter_extract(row::DataFrameRow, param::String, func::Union{Function, Nothing} = nothing, initial_value::Union{Float64, Nothing} = nothing)
-    # 指定された param で始まる列を選択
     columns_df = select(DataFrame(row), r"^" * param)
-    
-    # func が指定されていれば、それを適用
     if func != nothing
         columns_df .= columns_df .* func(1.0)
     end
-    
-    # initial_value が指定されていれば、最初の列にその値を代入
     if initial_value != nothing
         columns_df[!, Symbol(param * "1")] = [initial_value]
     end
-    
     return columns_df
 end
 
 function parameter_replace(sorted_numbers::Vector{Any}, param::String, parameter_columns::DataFrame)
     sorted_df = DataFrame()
     for i in 1:length(sorted_numbers)
-        # 動的に列名を作成して値を代入
         sorted_df[!, Symbol(param * string(i))] = parameter_columns[!, Symbol(param * string(sorted_numbers[i]))]
     end
     return sorted_df
